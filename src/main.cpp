@@ -5,10 +5,10 @@
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
-int pirPin = 12;
+int motionPin = 12;
 int moisturePin = A0;
 
-int pirVal = 0;
+int motionVal = 0;
 bool motionState = false; // We start with no motion detected.
 int moistureVal = 0;
 int moistureLimitValue = 500;
@@ -16,7 +16,7 @@ int volume = 30; //Set volume value (0~30).
 
 void setup()
 {
-  pinMode(pirPin, INPUT);
+  pinMode(motionPin, INPUT);
   pinMode(moisturePin, INPUT);
   
   mySoftwareSerial.begin(9600);
@@ -34,7 +34,7 @@ void setup()
   
   //----Set volume----
   myDFPlayer.volume(volume);  //Set volume value (0~30).
-  delay(1000);
+  delay(1000); // so it hopefully saves the setting
   
  //----Read volume----
   Serial.println("Volume:");
@@ -44,13 +44,12 @@ void setup()
 
 void loop()
 {
-  pirVal = digitalRead(pirPin); // Read out the pirPin and store as val:
+  motionVal = digitalRead(motionPin);
   moistureVal = analogRead(moisturePin);
-  //Serial.println(moistureVal);
 
 
   // If motion is detected (pirPin = HIGH), do the following:
-  if (pirVal == HIGH && moistureVal > moistureLimitValue) {
+  if (motionVal == HIGH && moistureVal > moistureLimitValue) {
     // Change the motion state to true (motion detected):
     if (motionState == false) {
       Serial.println("Motion detected!");
