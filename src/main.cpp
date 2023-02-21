@@ -5,8 +5,15 @@
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
+int pirPin = 12;
+
+int pirVal = 0;
+bool motionState = false; // We start with no motion detected.
+
 void setup()
 {
+  pinMode(pirPin, INPUT);
+  
   mySoftwareSerial.begin(9600);
   Serial.begin(115200);
   
@@ -27,7 +34,6 @@ void setup()
   delay(1000);
   
  //----Read volume----
-  delay(1000);
   Serial.println("Volume:");
   Serial.println(myDFPlayer.readVolume()); //read current volume
  
@@ -35,10 +41,23 @@ void setup()
 
 void loop()
 {
-  static unsigned long timer = millis();
-  
-  if (millis() - timer > 3000) {
-    timer = millis();
-    myDFPlayer.next();  //Play next mp3 every 3 second.
+  pirVal = digitalRead(pirPin); // Read out the pirPin and store as val:
+
+  // If motion is detected (pirPin = HIGH), do the following:
+  if (pirVal == HIGH) {
+    // Change the motion state to true (motion detected):
+    if (motionState == false) {
+      Serial.println("Motion detected!");
+      motionState = true;
+      myDFPlayer.play(2);
+    }
+  }
+  // If no motion is detected (pirPin = LOW), do the following:
+  else {
+    // Change the motion state to false (no motion):
+    if (motionState == true) {
+      Serial.println("Motion ended!");
+      motionState = false;
+    }
   }
 }
